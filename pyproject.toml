@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "audio-capture"
+version = "0.1.0"
+description = "Capture local audio or download BBB recordings, then transcribe them."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+transcribe = ["faster-whisper>=1.1,<2"]
+cuda = [
+    "faster-whisper>=1.1,<2",
+    "nvidia-cublas-cu12>=12,<13; sys_platform == 'linux'",
+    "nvidia-cudnn-cu12>=9,<10; sys_platform == 'linux'",
+]
+
+[dependency-groups]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+audio-capture = "audio_capture.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
