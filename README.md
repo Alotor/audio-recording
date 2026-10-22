@@ -35,7 +35,19 @@ uv sync --extra cuda
 ```
 
 `faster-whisper` downloads the selected model the first time it transcribes.
-All transcription commands use the `medium` model on CUDA by default.
+All transcription commands use the `medium` model on CUDA with
+`int8_float16` compute by default.
+
+Transcription uses a beam size of five and does not carry previous text into
+later windows, reducing the risk of repetition loops. Automatic language
+detection chooses between English and Spanish throughout the audio so meetings
+can switch between them. `--language` pins a single language instead and bypasses
+the two-language detection filter. The filter preserves the detector's original
+probabilities. Speech stays in its original language; inference speed is largely
+unchanged by this filter. Word timing enables filtering of suspected
+hallucinations around silence. These settings favor accuracy over
+speed. If ten consecutive text segments are identical, transcription stops
+with an error before writing or replacing the transcript; the audio is retained.
 
 For CPU transcription, install the transcription dependencies without the
 CUDA runtime and pass `--device cpu` when running a command:
@@ -133,9 +145,10 @@ The video and `transcript.txt` are saved under `recordings/RECORDING_ID` by
 default. The BBB screen-share is a separate visual-only stream; transcription
 uses the webcam video because it contains the complete meeting audio. BBB
 recordings use the Whisper `medium` model on CUDA with `int8_float16` compute
-by default. The usual inference options are supported, including `--language
-es`, `--model small` for a faster run, or `--device cpu` when no NVIDIA GPU is
-available. To download the video without transcribing it, add
+by default, matching the other transcription commands. The usual inference
+options are supported, including `--language es`, `--model small` for a faster
+run, or `--device cpu` when no NVIDIA GPU is available. To download the video
+without transcribing it, add
 `--no-transcribe`. Re-running the command with the same output directory reuses
 an existing recording and continues with transcription instead of downloading
 it again.
@@ -151,3 +164,11 @@ transcript.txt
 
 The separate source files are retained so levels can be adjusted or the
 recording can be remixed later.
+
+## Publishing a copy
+
+Recordings, transcripts, local credentials, and agent settings are excluded by
+`.gitignore`. These rules do not remove files or personal information already
+stored in Git history. Review both tracked files and commit author/committer
+details before publishing. Uploading the entire working folder can also include
+ignored files; use a reviewed source-only copy when sharing an archive.

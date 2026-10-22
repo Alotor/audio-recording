@@ -1,0 +1,4 @@
+interface:
+  display_name: "Process Recordings"
+  short_description: "Summarize recordings and maintain the local archive"
+  default_prompt: "Use $process-recordings to summarize and archive pending recordings, remove their WAV files, and update the archive indices."

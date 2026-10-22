@@ -19,6 +19,7 @@ from audio_capture.bbb import (
 )
 from audio_capture.progress import DownloadProgress, TranscriptionProgress
 from audio_capture.transcribe import (
+    DEFAULT_CUDA_COMPUTE_TYPE,
     DEFAULT_DEVICE,
     DEFAULT_MODEL,
     TranscriptionError,
@@ -33,7 +34,7 @@ from audio_capture.workflow import (
 )
 
 
-BBB_DEFAULT_COMPUTE_TYPE = "int8_float16"
+BBB_DEFAULT_COMPUTE_TYPE = DEFAULT_CUDA_COMPUTE_TYPE
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -84,7 +85,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     record_parser.add_argument(
         "--language",
-        help="Spoken language code such as en or es (default: auto-detect).",
+        help="Pin one spoken language (default: detect English/Spanish switches).",
     )
     add_inference_arguments(record_parser)
     record_parser.set_defaults(handler=handle_record)
@@ -104,7 +105,10 @@ def build_parser() -> argparse.ArgumentParser:
             f"(default: {DEFAULT_MODEL})."
         ),
     )
-    transcribe_parser.add_argument("--language")
+    transcribe_parser.add_argument(
+        "--language",
+        help="Pin one spoken language (default: detect English/Spanish switches).",
+    )
     add_inference_arguments(transcribe_parser)
     transcribe_parser.set_defaults(handler=handle_transcribe)
 
@@ -131,7 +135,10 @@ def build_parser() -> argparse.ArgumentParser:
             f"(default: {DEFAULT_MODEL})."
         ),
     )
-    bbb_parser.add_argument("--language")
+    bbb_parser.add_argument(
+        "--language",
+        help="Pin one spoken language (default: detect English/Spanish switches).",
+    )
     add_inference_arguments(
         bbb_parser,
         default_device=DEFAULT_DEVICE,
@@ -154,7 +161,11 @@ def add_inference_arguments(
         help=f"Whisper inference device (default: {default_device}).",
     )
     compute_type_default = default_compute_type or (
-        "int8" if default_device == "cpu" else "automatic"
+        "int8"
+        if default_device == "cpu"
+        else DEFAULT_CUDA_COMPUTE_TYPE
+        if default_device == "cuda"
+        else "automatic"
     )
     parser.add_argument(
         "--compute-type",

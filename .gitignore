@@ -6,3 +6,32 @@ __pycache__/
 build/
 dist/
 recordings/
+
+# Local credentials and agent settings
+.env
+.env.*
+!.env.example
+.aws/
+.ssh/
+.codex/
+.agents/
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+
+# Captured media and transcripts, including custom output locations
+*.wav
+*.webm
+*.mp4
+*.mp3
+*.m4a
+*.flac
+*.ogg
+transcript*.txt
+transcript*.json
+transcript*.srt
+transcript*.vtt
+combined.txt
